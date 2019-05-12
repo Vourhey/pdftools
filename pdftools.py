@@ -7,13 +7,17 @@ def main():
     parser = argparse.ArgumentParser(description="PDF Toolkit by Vourhey")
     subparser = parser.add_subparsers()
 
-    parser_split = subparser.add_parser('split')
-    parser_split.add_argument('input', type=argparse.FileType('rb'))
-    parser_split.add_argument(
-        '-o', '--output', type=argparse.FileType('wb'), nargs='?')
+    parser_split = subparser.add_parser(
+        'split', help='Splits a given pdf into pages', aliases=['s'])
+    parser_split.add_argument('input', type=argparse.FileType('rb'),
+                              help='A pdf file to be split')
+    parser_split.add_argument('-o', '--output', type=str,
+                              help='A prefix for output files',
+                              default='output')
     parser_split.set_defaults(func=split)
 
-    parser_merge = subparser.add_parser('merge')
+    parser_merge = subparser.add_parser(
+        'merge', help='Merges given pdfs into one pdf file', aliases=['m'])
     parser_merge.add_argument(
         '-o', '--output', type=argparse.FileType('wb'),
         default=open('output.pdf', 'wb'), help='Specify output file')
@@ -21,13 +25,16 @@ def main():
     parser_merge.set_defaults(func=merge)
 
     args = parser.parse_args()
-    args.func(args)
+    if len(vars(args)) == 0:
+        parser.print_help()
+    else:
+        args.func(args)
 
 
 def split(args):
     reader = PdfFileReader(args.input)
     padding = len(str(reader.getNumPages()))
-    format_str = 'output-{{:0{}d}}.pdf'.format(padding)
+    format_str = '{}-{{:0{}d}}.pdf'.format(args.output, padding)
     for i in range(reader.getNumPages()):
         writer = PdfFileWriter()
         writer.addPage(reader.getPage(i))
