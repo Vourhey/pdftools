@@ -1,5 +1,12 @@
 # PDF Tools
 
+Installation:
+```
+virtualenv -p python3 env
+source env/bin/activate
+pip install -r requirements.txt
+```
+
 Usage:
 ```
 usage: pdftools.py [-h] {split,s,merge,m} ...
